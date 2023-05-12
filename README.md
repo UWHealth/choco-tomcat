@@ -1,4 +1,4 @@
-# choco-apache-httpd
+# choco-tomcat
 
 Chocolatey package builder for tomcat9 from Apache Tomcat
 
