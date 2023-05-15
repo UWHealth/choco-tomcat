@@ -5,6 +5,8 @@ $baseUrl = 'https://archive.apache.org/dist/tomcat'
 $preReleaseSuffix = '-M\d+$'
 $UrlFormat = "{0}/tomcat-{1}/v{2}/bin/apache-tomcat-{2}-windows-{3}.zip{4}"
 
+$versionPostfix = "0000"
+
 function global:au_GetLatest {
     $tags = Invoke-RestMethod -Uri $releaseTagsUrl
     # Strip out any pre-release versions
@@ -31,7 +33,7 @@ function global:au_GetLatest {
 
             If ($versionValid) {
                 $versionInfo = @{
-                    Version = $version
+                    Version = "$version.$versionPostfix"
                     MajorVersion = $majorVersion
                     URL32 = $zip32Url
                     Checksum32Url = $checksum32Url
@@ -99,3 +101,4 @@ function global:au_SearchReplace {
 }
 
 Update-Package -ChecksumFor none
+$env:CHOCO_PACKAGE_VERSION = $Latest.Version
