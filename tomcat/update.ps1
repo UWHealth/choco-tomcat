@@ -10,7 +10,7 @@ $versionPostfix = "0001"
 function global:au_GetLatest {
     $tags = Invoke-RestMethod -Uri $releaseTagsUrl
     # Strip out any pre-release versions
-    $tags = $tags.where{$_.ref -NotMatch $preReleaseSuffix}
+    $tags = $tags.where{ $_.ref -NotMatch $preReleaseSuffix }
     $i = 0
     $versionValid = $false
     $versionInfo = @{}
@@ -33,13 +33,14 @@ function global:au_GetLatest {
 
             If ($versionValid) {
                 $versionInfo = @{
-                    Version = "$version.$versionPostfix"
-                    MajorVersion = $majorVersion
-                    URL32 = $zip32Url
-                    Checksum32Url = $checksum32Url
+                    Version        = "$version.$versionPostfix"
+                    RootVersion    = $version
+                    MajorVersion   = $majorVersion
+                    URL32          = $zip32Url
+                    Checksum32Url  = $checksum32Url
                     ChecksumType32 = 'sha512'
-                    URL64 = $zip64Url
-                    Checksum64Url = $checksum64Url
+                    URL64          = $zip64Url
+                    Checksum64Url  = $checksum64Url
                     ChecksumType64 = 'sha512'
                 }
             }
@@ -69,7 +70,8 @@ function au_TestVersionExists($checksumUrl) {
         # Finally, we clean up the http request by closing it.
         If ($null -eq $HTTP_Response) { } 
         Else { $HTTP_Response.Close() }
-    } catch {
+    }
+    catch {
         $validVersion = $false
     }
 
@@ -81,21 +83,21 @@ function global:au_BeforeUpdate { Get-RemoteFiles -Purge -NoSuffix -Algorithm sh
 function global:au_SearchReplace {
     $filename32 = Split-Path -Path $Latest.URL32 -Leaf
     $filename64 = Split-Path -Path $Latest.URL64 -Leaf
-    $folderName = "apache-tomcat-{0}" -f $Latest.Version
+    $folderName = "apache-tomcat-{0}" -f $Latest.RootVersion
     @{
-        'tools\VERIFICATION.txt' = @{
+        'tools\VERIFICATION.txt'        = @{
             '^SHA-512 of 32-bit:.*' = 'SHA-512 of 32-bit: {0}' -f $Latest.Checksum32
             '^SHA-512 of 64-bit:.*' = 'SHA-512 of 64-bit: {0}' -f $Latest.Checksum64
-            '^32-bit:.*' = '32-bit: {0}' -f $Latest.Checksum32Url
-            '^64-bit:.*' = '64-bit: {0}' -f $Latest.Checksum64Url
+            '^32-bit:.*'            = '32-bit: {0}' -f $Latest.Checksum32Url
+            '^64-bit:.*'            = '64-bit: {0}' -f $Latest.Checksum64Url
         }
-        'tools\chocolateyInstall.ps1' = @{
-            '[$]filename32 =.*' = '$filename32 = "{0}"' -f $filename32
-            '[$]filename64 =.*' = '$filename64 = "{0}"' -f $filename64
-            '[$]zipContentFolderName =.*'= '$zipContentFolderName = "{0}"' -f $folderName
+        'tools\chocolateyInstall.ps1'   = @{
+            '[$]filename32 =.*'           = '$filename32 = "{0}"' -f $filename32
+            '[$]filename64 =.*'           = '$filename64 = "{0}"' -f $filename64
+            '[$]zipContentFolderName =.*' = '$zipContentFolderName = "{0}"' -f $folderName
         }
         'tools\chocolateyUninstall.ps1' = @{
-            '[$]zipContentFolderName =.*'= '$zipContentFolderName = "{0}"' -f $folderName
+            '[$]zipContentFolderName =.*' = '$zipContentFolderName = "{0}"' -f $folderName
         }
     }
 }
