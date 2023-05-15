@@ -3,7 +3,7 @@ $toolsDir = Split-Path -parent $MyInvocation.MyCommand.Definition
 
 $filename32 = "apache-tomcat-9.0.75-windows-x86.zip"
 $filename64 = "apache-tomcat-9.0.75-windows-x64.zip"
-$zipContentFolderName = "apache-tomcat-9.0.75.0000"
+$zipContentFolderName = "apache-tomcat-9.0.75.0001"
 
 $packageArgs = @{
     packageName = $env:ChocolateyPackageName
