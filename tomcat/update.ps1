@@ -1,14 +1,16 @@
 ﻿$ErrorActionPreference = 'Stop'
 
 $releaseTagsUrl = 'https://api.github.com/repos/apache/tomcat/git/refs/tags'
+$gh_token = $env:GITHUB_TOKEN
+$headers = @{'authorization' = 'Bearer {0}' -f $gh_token}
 $baseUrl = 'https://archive.apache.org/dist/tomcat'
 $preReleaseSuffix = '-M\d+$'
 $UrlFormat = "{0}/tomcat-{1}/v{2}/bin/apache-tomcat-{2}-windows-{3}.zip{4}"
 
-$versionPostfix = "0002"
+$versionPostfix = "0000"
 
 function global:au_GetLatest {
-    $tags = Invoke-RestMethod -Uri $releaseTagsUrl
+    $tags = Invoke-RestMethod -Uri $releaseTagsUrl -Headers $headers
     # Strip out any pre-release versions
     $tags = $tags.where{ $_.ref -NotMatch $preReleaseSuffix }
     $i = 0
@@ -102,5 +104,6 @@ function global:au_SearchReplace {
     }
 }
 
+Write-Host $gh_token.Substring(0,4)
 Update-Package -ChecksumFor none
 $env:CHOCO_PACKAGE_VERSION = $Latest.Version

@@ -36,6 +36,7 @@ jobs:
     - name: Build Package
       id: build-package
       run: |
+        $env:GITHUB_TOKEN = '${{ secrets.GITHUB_TOKEN }}'
         .\update.ps1
         echo "VERSION=$Env:CHOCO_PACKAGE_VERSION" >> $Env:GITHUB_ENV
 
