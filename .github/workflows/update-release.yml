@@ -25,10 +25,20 @@ jobs:
         shell: pwsh
         working-directory: .\${{env.PACKAGE}}
     steps:
+
+    # using a GitHub App will allow other workflows to trigger (on release) and bypass a PR
+    - name: Get UW Health Repo Bot Token
+      if: ${{ env.BUILD_ONLY != 'true' && env.CHANGES != 'false' }}
+      id: uw-health-repo-bot
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: ${{ secrets.UW_HEALTH_REPO_BOT_APP_ID }}
+        application_private_key: ${{ secrets.UW_HEALTH_REPO_BOT_PRIVATE_KEY }}      
+
     - name: Checkout GitHub Action
       uses: actions/checkout@v3
       with:
-        ssh-key: ${{ secrets.SSH_KEY_COMMIT_PUSH }}
+        token: ${{ steps.uw-health-repo-bot.outputs.token }}
 
     - name: Install Choco Auto Updates
       run: choco install au -y
@@ -48,15 +58,6 @@ jobs:
         git fetch --force
         $changes = $(git status --porcelain)
         if($changes.length -gt 0){ git add -A && git commit -m "Updated $Env:PACKAGE to $Env:VERSION" && git push && echo "CHANGES=true" >> $Env:GITHUB_ENV}
-        
-    # using a GitHub App will allow other workflows to trigger (on release)
-    - name: Get UW Health Repo Bot Token
-      if: ${{ env.BUILD_ONLY != 'true' && env.CHANGES != 'false' }}
-      id: uw-health-repo-bot
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: ${{ secrets.UW_HEALTH_REPO_BOT_APP_ID }}
-        application_private_key: ${{ secrets.UW_HEALTH_REPO_BOT_PRIVATE_KEY }}
 
     - name: Release and Upload
       if: ${{ env.BUILD_ONLY != 'true' && env.CHANGES != 'false'  }}
