@@ -28,7 +28,6 @@ jobs:
 
     # using a GitHub App will allow other workflows to trigger (on release) and bypass a PR
     - name: Get UW Health Repo Bot Token
-      if: ${{ env.BUILD_ONLY != 'true' && env.CHANGES != 'false' }}
       id: uw-health-repo-bot
       uses: peter-murray/workflow-application-token-action@v2
       with:
