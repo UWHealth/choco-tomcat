@@ -7,7 +7,8 @@ $baseUrl = 'https://archive.apache.org/dist/tomcat'
 $preReleaseSuffix = '-M\d+$'
 $UrlFormat = "{0}/tomcat-{1}/v{2}/bin/apache-tomcat-{2}-windows-{3}.zip{4}"
 
-$versionPostfix = "0001"
+# chocolatey doesn't do leading zeros anymore
+$versionPostfix = "1"
 
 function global:au_GetLatest {
     $tags = Invoke-RestMethod -Uri $releaseTagsUrl -Headers $headers
